@@ -1,0 +1,26 @@
+// Patrascoiu Ion - Radu, 322 CD
+
+    In implementarea temei mi-am definit propria structura de arp, de entry
+pentru tabela de routare si pentru tabela arp. Am preluat functia de checksum
+din laboratorul 4. Am construit functii de parsare a tabelei de routare, de
+adaugare in tabela arp, de obtinut longest prefix match pe tabela de routare,
+de cautare in tabela arp si o functie care prelucreaza comportamentul pentru 
+icmp timeout si host unreachable.
+    In main am apelat functia de parsare a tabelei de routare si am stocat 
+intrarile intr-o tabela alocata dinamic. In while(1), primesc un pachet,
+verific ce fel de pachet e: arp, ip, icmp. Daca este de tip arp request,
+raspund cu arp reply, doar daca este destinat mie pachetul, completez pachetul cu
+informatiile necesare(mac-ul sursa, pentru care s-a facut request). Daca este
+de tip arp reply, completez tabela arp si incep sa golesc coada cu mesaje si
+le forwardez. Daca este un pachet de tip ip, verific mai intai daca este unul
+de tip icmp. Daca da, verific de asemenea daca este un icmp echo request
+destinat mie. In caz afirmativ, completez campurile pentru ip, type si checksum
+si trimit mai departe. Daca nu, incep partea de forwarding: verific checksum, 
+ttl, creez un nou pachet, verific daca ip-ul are o ruta valabila, apoi daca 
+mac-ul se gaseste in tabela arp, daca nu, trebuie sa trimit arp request.
+Completez noul pachet format si trimit pe broadcast. Inainte sa trimit, 
+pun pachetul in coada, pentru a fi trimis atunci cand vine reply-ul cu mac-ul 
+potrivit. Daca stiu adresa mac, adica se gaseste in tabela arp, doar forwardez
+pachetul. Daca nu se gaseste o ruta viabila pentru pachet, atunci aceste este
+aruncat si se trimite un mesaj de tip host unreachable. Daca ttl-ul este <= 1,
+se trimite un mesaj de tip time exceeded.
